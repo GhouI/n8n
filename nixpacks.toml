@@ -4,7 +4,7 @@ nixPkgs = ["python310", "ffmpeg", "git", "wget"]
 [phases.install]
 cmds = [
     "pip install --break-system-packages librosa==0.10.1 soundfile==0.12.1 noisereduce==3.0.0 scipy==1.11.4 numpy==1.26.2 requests==2.31.0",
-    "pip install --break-system-packages spotdl==4.2.5",
+    "pip install --break-system-packages votify",
     "wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -O /usr/local/bin/yt-dlp && chmod +x /usr/local/bin/yt-dlp || true",
     "mkdir -p /tmp/podcast_processing && chmod 777 /tmp/podcast_processing || true"
 ]
