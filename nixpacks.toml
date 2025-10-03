@@ -1,0 +1,37 @@
+[phases.setup]
+nixPkgs = [
+  'nodejs_20',
+  'ffmpeg-full',
+  'python311',
+  'python311Packages.pip',
+  'python311Packages.numpy',
+  'python311Packages.scipy',
+  'python311Packages.librosa',
+  'python311Packages.soundfile',
+  'yt-dlp',
+  'bash',
+  'bc',
+  'git',
+  'wget'
+]
+
+[phases.install]
+cmds = [
+  'npm install -g n8n',
+  'pip install --user spotdl noisereduce',
+  'mkdir -p /tmp/podcast-clips && chmod 777 /tmp/podcast-clips',
+  'mkdir -p $HOME/.n8n && chmod 700 $HOME/.n8n'
+]
+
+[phases.build]
+cmds = ['echo "Build phase complete"']
+
+[start]
+cmd = 'n8n start'
+
+[variables]
+N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS = 'true'
+N8N_PORT = '5678'
+N8N_HOST = '0.0.0.0'
+N8N_PROTOCOL = 'http'
+NODE_ENV = 'production'
