@@ -2,7 +2,7 @@ FROM n8nio/n8n:latest
 
 USER root
 
-# Install system dependencies AND build tools for Python packagess
+# Install system dependencies AND build tools for Python packages
 RUN apk add --no-cache \
     python3 \
     py3-pip \
