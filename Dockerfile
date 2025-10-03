@@ -18,15 +18,18 @@ RUN apk add --no-cache \
     musl-dev \
     python3-dev \
     openblas-dev \
-    lapack-dev
+    lapack-dev \
+    cmake \
+    llvm15-dev
 
 # Install numpy first (other packages depend on it)
 RUN pip3 install --break-system-packages numpy==1.26.2
 
-# Install scipy and scientific packages
+# Install scipy separately (takes time to compile)
+RUN pip3 install --break-system-packages scipy==1.11.4
+
+# Install audio processing WITHOUT librosa (which requires llvmlite/numba)
 RUN pip3 install --break-system-packages \
-    scipy==1.11.4 \
-    librosa==0.10.1 \
     soundfile==0.12.1 \
     noisereduce==3.0.0
 
