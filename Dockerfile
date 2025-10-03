@@ -2,7 +2,7 @@ FROM n8nio/n8n:latest
 
 USER root
 
-# Install system dependencies
+# System dependencies
 RUN apk add --no-cache \
     python3 \
     py3-pip \
@@ -14,15 +14,17 @@ RUN apk add --no-cache \
     curl \
     ca-certificates \
     libsndfile \
-    # If pip ever falls back to building wheels on Alpine, uncomment the next line:
-    # build-base python3-dev pkgconfig \
-    && true
+    # --- Added to fix scikit-learn build on Alpine ---
+    build-base \
+    python3-dev
 
-# Install yt-dlp (official binary release)
+# yt-dlp (official binary release)
 RUN wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -O /usr/local/bin/yt-dlp \
  && chmod a+rx /usr/local/bin/yt-dlp
 
-# Install Python packages for audio processing
+# Python packages for audio processing
+# (no-cache-dir keeps image smaller; break-system-packages is fine in this base)
+# If you still see builds, you can optionally pin to known wheel versions, e.g. scikit-learn==1.5.2
 RUN pip3 install --no-cache-dir --break-system-packages \
     spotdl \
     numpy \
@@ -31,13 +33,13 @@ RUN pip3 install --no-cache-dir --break-system-packages \
     soundfile \
     noisereduce
 
-# Create common dirs (note: Railway volumes mount at runtime)
+# Dirs & permissions (Railway volumes mount at runtime)
 RUN mkdir -p /tmp/podcast-clips /home/node/.n8n /data \
  && chmod 777 /tmp/podcast-clips \
  && chown -R node:node /home/node/.n8n /data \
  && chmod 700 /home/node/.n8n
 
-# Quick sanity checks
+# Sanity checks
 RUN yt-dlp --version \
  && ffmpeg -version \
  && python3 --version \
@@ -49,9 +51,9 @@ USER node
 ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 ENV N8N_HOST=0.0.0.0
 
-# Point n8n's user folder at your mounted Railway volume (adjust if you mounted a different path)
+# Point n8n's user folder to your Railway volume (adjust if you mounted a different path)
 ENV N8N_USER_FOLDER=/data
 
-# Railway provides PORT at runtime; use it for N8N_PORT. Fallback to 5678 for local runs.
+# Railway provides PORT at runtime; use it (fallback to 5678 for local runs)
 EXPOSE 5678
 CMD ["sh","-c","N8N_PORT=${PORT:-5678} n8n"]
